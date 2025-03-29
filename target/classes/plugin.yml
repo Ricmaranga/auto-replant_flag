@@ -1,0 +1,9 @@
+author: Ricmaranga
+name: AutoReplant
+description: "WorldGuard Flag to replant crops"
+version: '1.0'
+
+main: it.pose.autoreplant.AutoReplant
+
+api-version: '1.21'
+depend: [WorldGuard]

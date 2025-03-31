@@ -1,0 +1,5 @@
+# Cooldown for replace in ticks
+cooldown: 20
+
+# Drop item on break if fully grown
+dropItem: true

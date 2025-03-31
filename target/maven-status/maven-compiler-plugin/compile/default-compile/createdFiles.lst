@@ -1,2 +1,4 @@
-it/pose/autoreplant/CropListener.class
-it/pose/autoreplant/AutoReplant.class
+it\pose\autoreplant\AutoReplant.class
+it\pose\autoreplant\CropsListener.class
+it\pose\autoreplant\Commands.class
+it\pose\autoreplant\CropsLoader.class

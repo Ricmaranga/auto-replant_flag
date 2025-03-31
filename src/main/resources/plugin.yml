@@ -1,9 +1,17 @@
 author: Ricky
 name: AutoReplant
 description: "WorldGuard Flag to replant crops"
-version: '1.0'
+version: '1.1'
 
 main: it.pose.autoreplant.AutoReplant
 
 api-version: '1.21'
 depend: [WorldGuard]
+
+commands:
+  autoreplant:
+    description: Reload the AutoReplant plugin configuration
+    usage: /autoreplant reload
+    permission: autoreplant.reload
+    permission-message: "You don't have permission to reload AutoReplant!"
+    default: op

@@ -8,6 +8,7 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
@@ -19,15 +20,21 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
-public class CropListener implements Listener {
+public class CropsListener implements Listener {
 
+    private static final Map<String, Material> itemToBlock = Map.of(
+            "POTATOES", Material.POTATO,
+            "CARROTS", Material.CARROT,
+            "BEETROOTS", Material.BEETROOT,
+            "WHEAT", Material.WHEAT,
+            "NETHER_WART", Material.NETHER_WART
+    );
 
-    private static final Set<Material> ALLOWED_CROPS;
-    static {
-        ALLOWED_CROPS = Set.of(Material.WHEAT, Material.CARROTS, Material.POTATOES);
-    }
+    public static Set<Material> ALLOWED_CROPS = new HashSet<>();
 
     @EventHandler
     public void onCropBreak(BlockBreakEvent e) {
@@ -37,7 +44,7 @@ public class CropListener implements Listener {
         Block block = e.getBlock();
         Material type = block.getType();
 
-        if (!ALLOWED_CROPS.contains(type)) return;
+        if (!ALLOWED_CROPS.contains(itemToBlock.getOrDefault(type.toString(), type))) return;
 
         Location loc = block.getLocation();
         World world = loc.getWorld();
@@ -56,10 +63,13 @@ public class CropListener implements Listener {
         if (flagState != StateFlag.State.ALLOW) return;
 
         BlockData data = block.getBlockData();
-        e.setCancelled(true);
-        if (data instanceof Ageable ageable && ageable.getAge() == ageable.getMaximumAge()) block.getWorld().dropItemNaturally(loc, new ItemStack(type));
-        block.setType(type);
-        block.setBlockData(data);
+        if (data instanceof Ageable ageable && ageable.getAge() == ageable.getMaximumAge() && AutoReplant.drop)
+            block.getWorld().dropItemNaturally(loc, new ItemStack(itemToBlock.getOrDefault(type.toString(), type)));
+        Bukkit.getScheduler().runTaskLater(AutoReplant.getInstance(), () -> {
+            e.setCancelled(true);
+            block.setType(type);
+            block.setBlockData(data);
+        }, AutoReplant.cooldown);
 
     }
 }
